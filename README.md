@@ -3,59 +3,42 @@
 
 Para nuestro proyecto escogimos la alternativa cuatro, que es de libre eleccion. Nuestra propuesta es realizar un laberinto que se basa en el movimiento de las teclas W,A,S,D por medio de la libreria **msvcrt** junto a un sistema de vidas, trampas y opcion para escoger distintos tipos de laberinto y sus dificultades.
 
-### Objetivo del Juego
+### Objetivo 
 
 El jugador debe guiar un personaje desde la entrada del laberinto hasta la salida, evitando muros y trampas, y superando varios niveles. Tiene vidas limitadas, que se reducen al caer en trampas. El juego se controla con el teclado (W, A, S, D).
 
 
-## Estructura general del juego 🧱
-Menú principal (en consola):
+## Estructura general
 
-Iniciar partida.
+1. Menú principal (en consola):
+   - Iniciar partida.
+   - Elegir laberinto manualmente desde el banco de laberintos.
+   - Salir.
 
-Elegir laberinto manualmente desde un banco.
+2. Inicio del nivel:
+   - Se carga el laberinto (texto plano con símbolos).
+   - Se muestra en pantalla (consola) con el jugador en la posición inicial.
 
-Salir.
+3. Movimiento del jugador:
+   - Con teclas W (arriba), A (izquierda), S (abajo), D (derecha).
+   - Se verifica si el movimiento es válido:
+     - ✅Espacio libre → se mueve.
+     - ❌Muro → no se mueve.
+     - ☠️Trampa → pierde una vida.
+     - 🚪Salida → avanza al siguiente nivel o escoge otro (regrersa al "menú" para elegir un laberinto).
 
-Inicio del nivel:
+4. Sistema de vidas:
+   - El jugador inicia con X vidas.
+   - Si pisa una trampa, pierde una vida.
+   - Si llega a 0 vidas, fin del juego.
 
-Se carga el laberinto desde un archivo o estructura (texto plano con símbolos).
+5. Cambio de nivel:
+   - Al llegar a la salida, se carga el siguiente laberinto automáticamente.
+   - Puede haber 2 o más niveles predefinidos.
 
-Se muestra en pantalla (consola) con el jugador en la posición inicial.
-
-Movimiento del jugador:
-
-Con teclas W (arriba), A (izquierda), S (abajo), D (derecha).
-
-Se verifica si el movimiento es válido:
-
-✅ Espacio libre → se mueve.
-
-❌ Muro → no se mueve.
-
-☠️ Trampa → pierde una vida.
-
-🚪 Salida → avanza al siguiente nivel.
-
-Sistema de vidas:
-
-El jugador inicia con X vidas.
-
-Si pisa una trampa, pierde una vida.
-
-Si llega a 0 vidas, fin del juego.
-
-Cambio de nivel:
-
-Al llegar a la salida, se carga el siguiente laberinto automáticamente.
-
-Puede haber 2 o más niveles predefinidos.
-
-Fin del juego:
-
-Al completar todos los laberintos → mensaje de victoria.
-
-Al perder todas las vidas → mensaje de derrota.
+6. Fin del juego:
+   - Al completar todos los laberintos → mensaje de victoria.
+   - Al perder todas las vidas → mensaje de derrota.
 ## DIAGRAMA DE FLUJO
 
 ``` mermaid
@@ -65,22 +48,35 @@ config:
 ---
 
 flowchart TD
-    Start(["Inicio del programa"]) --> ShowMenu["Mostrar menú de niveles 1 al 10"]
-    ShowMenu --> ChooseLevel["Jugador elige nivel"]
-    ChooseLevel --> Init["Inicializar juego: vidas=3"]
-    Init --> LoadMaze["Cargar laberinto del nivel elegido"]
-    LoadMaze --> ShowMaze["Mostrar laberinto en consola"]
-    ShowMaze --> PlayerMove["Esperar movimiento del jugador"]
-    PlayerMove --> CheckMove["Verificar casilla destino"]
-    CheckMove --> Bomb{"¿Casilla tiene bomba?"}
-    Bomb -- Sí --> LoseLife["Restar 1 vida"]
-    LoseLife --> CheckLives{"¿Vidas > 0?"}
-    CheckLives -- No --> GameOver[["Fin del juego: Derrota"]]
-    CheckLives -- Sí --> ShowMaze
-    Bomb -- No --> WinLevel{"¿Llegó a la meta del laberinto?"}
-    WinLevel -- No --> ShowMaze
-    WinLevel -- Sí --> EndLevel[["Fin del juego: Nivel superado"]]
-    EndLevel --> ShowMenu
+    Start([Inicio del programa])
+    ShowMenu[Mostrar menu de niveles (1 al 10)]
+    ChooseLevel[Jugador elige nivel]
+    Init[Inicializar juego con 3 vidas]
+    LoadMaze[Cargar laberinto del nivel elegido]
+    ShowMaze[Mostrar laberinto en consola]
+    PlayerMove[Esperar movimiento del jugador]
+    CheckMove[Verificar casilla destino]
+    WallCheck{¿La casilla tiene muro?}
+    BlockMove[Movimiento bloqueado, volver a mover]
+    BombCheck{¿La casilla  tiene una bomba?}
+    LoseLife[Restar 1 vida]
+    CheckLives{Vidas > 0}
+    GameOver[[Fin del juego - Derrota]]
+    WinCheck{ Felicidades, Llegó a la meta}
+    EndLevel[[Nivel superado]]
+    LoopBack[Actualizar laberinto y repetir]
+
+    Start --> ShowMenu --> ChooseLevel --> Init --> LoadMaze --> ShowMaze --> PlayerMove --> CheckMove
+    CheckMove --> WallCheck
+    WallCheck -- Si --> BlockMove --> ShowMaze
+    WallCheck -- No --> BombCheck
+    BombCheck -- Si --> LoseLife --> CheckLives
+    CheckLives -- No --> GameOver
+    CheckLives -- Si --> ShowMaze
+
+    BombCheck -- No --> WinCheck
+    WinCheck -- No --> ShowMaze
+    WinCheck -- Si --> EndLevel --> ShowMenu
 ```
 # cronograma
 
