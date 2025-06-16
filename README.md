@@ -65,27 +65,22 @@ config:
 ---
 
 flowchart TD
-    A(["Inicio"]) --> B[Pantalla principal]
-    B --> C{"¿Desea ver las instrucciones del juego?"}
-    C -- Sí --> D[/Mostrar instrucciones/]
-    C -- No --> F
-    D --> F{"Escoga una dificultad"}
-    F -- Principiante --> G[/Mostrar tablero 8 x 8 con 10 minas/]
-    F -- Intermedio --> H[/Mostrar tablero 16 x 16 con 40 minas/]
-    F -- Experto --> I[/Mostrar tablero 16 x 36 con 99 minas/]
-    G --> J[seleccione una casilla]
-    H --> J
-    I --> J
-    J --> K{"¿La casilla tiene mina?"}
-    K -- Sí --> L[/Mostrar mensaje de juego perdido/]
-    L --> Q
-    K -- No --> M[/Mostrar número de minas cercanas/]
-    M --> N{"¿Ha descubierto todas las casillas?"}
-    N -- No -->J
-    N -- Sí --> O[/Mostrar mensaje de juego ganado/]
-    O --> Q{"¿Desea volver a jugar?"}
-    Q -- Sí -->F
-    Q -- No --> P(["Fin"])
+    Start(["Inicio del programa"]) --> ShowMenu["Mostrar menú de niveles 1 al 10"]
+    ShowMenu --> ChooseLevel["Jugador elige nivel"]
+    ChooseLevel --> Init["Inicializar juego: vidas=3"]
+    Init --> LoadMaze["Cargar laberinto del nivel elegido"]
+    LoadMaze --> ShowMaze["Mostrar laberinto en consola"]
+    ShowMaze --> PlayerMove["Esperar movimiento del jugador"]
+    PlayerMove --> CheckMove["Verificar casilla destino"]
+    CheckMove --> Bomb{"¿Casilla tiene bomba?"}
+    Bomb -- Sí --> LoseLife["Restar 1 vida"]
+    LoseLife --> CheckLives{"¿Vidas > 0?"}
+    CheckLives -- No --> GameOver[["Fin del juego: Derrota"]]
+    CheckLives -- Sí --> ShowMaze
+    Bomb -- No --> WinLevel{"¿Llegó a la meta del laberinto?"}
+    WinLevel -- No --> ShowMaze
+    WinLevel -- Sí --> EndLevel[["Fin del juego: Nivel superado"]]
+    EndLevel --> ShowMenu
 ```
 # cronograma
 
