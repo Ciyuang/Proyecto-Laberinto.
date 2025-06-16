@@ -3,9 +3,41 @@
 
 Para nuestro proyecto escogimos la alternativa cuatro, que es de libre eleccion. Nuestra propuesta es realizar un laberinto que se basa en el movimiento de las teclas W,A,S,D por medio de la libreria **msvcrt** junto a un sistema de vidas, trampas y opcion para escoger distintos tipos de laberinto y sus dificultades.
 
-### Objetivo 
+### Objetivo del juego
 
 El jugador debe guiar un personaje desde la entrada del laberinto hasta la salida, evitando muros y trampas, y superando varios niveles. Tiene vidas limitadas, que se reducen al caer en trampas. El juego se controla con el teclado (W, A, S, D).
+
+### Recursos 
+1. Manejo de archivos
+   - open(), readlines(), etc.
+   - Uso: Leer laberintos desde archivos .txt.
+
+2. Módulo os
+   - os.system('cls') o os.system('clear')
+
+3. Módulo colorama
+   - init(), Fore, Back, Style
+   - Para añadir color al jugador, muros, trampas, etc. en la consola.
+
+4. Captura de teclas
+   - keyboard.is_pressed() 
+   - msvcrt.getch() 
+   - Uso: Detectar teclas WASD sin pulsar Enter.
+
+5. Funciones y modularización
+   - Definir funciones específicas:
+   - mostrar_laberinto()
+   - mover_jugador()
+   - detectar_colision()
+   - cargar_nivel()
+   - controlar_vidas()
+
+6. Estructuras de datos útiles
+   - Listas anidadas (list[list]): Representar el laberinto en memoria.
+   - Diccionarios (dict): Manejar niveles, vidas, símbolos personalizados, etc.
+
+7. Control de flujo del juego
+   - Uso de bucles while con múltiples condiciones 
 
 
 ## Estructura general
@@ -46,37 +78,29 @@ El jugador debe guiar un personaje desde la entrada del laberinto hasta la salid
 config:
   theme: redux
 ---
-
 flowchart TD
-    Start([Inicio del programa])
-    ShowMenu[Mostrar menu de niveles (1 al 10)]
-    ChooseLevel[Jugador elige nivel]
-    Init[Inicializar juego con 3 vidas]
-    LoadMaze[Cargar laberinto del nivel elegido]
-    ShowMaze[Mostrar laberinto en consola]
-    PlayerMove[Esperar movimiento del jugador]
-    CheckMove[Verificar casilla destino]
-    WallCheck{¿La casilla tiene muro?}
-    BlockMove[Movimiento bloqueado, volver a mover]
-    BombCheck{¿La casilla  tiene una bomba?}
-    LoseLife[Restar 1 vida]
-    CheckLives{Vidas > 0}
-    GameOver[[Fin del juego - Derrota]]
-    WinCheck{ Felicidades, Llegó a la meta}
-    EndLevel[[Nivel superado]]
-    LoopBack[Actualizar laberinto y repetir]
-
-    Start --> ShowMenu --> ChooseLevel --> Init --> LoadMaze --> ShowMaze --> PlayerMove --> CheckMove
-    CheckMove --> WallCheck
-    WallCheck -- Si --> BlockMove --> ShowMaze
-    WallCheck -- No --> BombCheck
-    BombCheck -- Si --> LoseLife --> CheckLives
-    CheckLives -- No --> GameOver
-    CheckLives -- Si --> ShowMaze
-
-    BombCheck -- No --> WinCheck
-    WinCheck -- No --> ShowMaze
-    WinCheck -- Si --> EndLevel --> ShowMenu
+    Start(["Inicio del programa"]) --> ShowMenu["Mostrar menú de niveles 1 al 10"]
+    ShowMenu --> ChooseLevel["Jugador elige nivel"]
+    ChooseLevel --> Init["Inicializar juego con 3 vidas"]
+    Init --> LoadMaze["Cargar laberinto del nivel elegido"]
+    LoadMaze --> ShowMaze["Mostrar laberinto en consola"]
+    ShowMaze --> PlayerMove["Esperar movimiento del jugador"]
+    PlayerMove --> CheckMove["Verificar casilla destino"]
+    
+    CheckMove --> WallCheck{"¿La casilla tiene muro?"}
+    WallCheck -- Sí --> BlockMove["Movimiento bloqueado, volver a mover"] --> ShowMaze
+    WallCheck -- No --> BombCheck{"¿La casilla tiene una bomba?"}
+    
+    BombCheck -- Sí --> LoseLife["Restar 1 vida"]
+    LoseLife --> CheckLives{"¿Vidas > 0?"}
+    CheckLives -- No --> GameOver[["Fin del juego - Derrota"]]
+    CheckLives -- Sí --> ShowMaze
+    
+    BombCheck -- No --> WinCheck{"¿Es la meta o salida?"}
+    WinCheck -- Sí --> EndLevel[["¡Nivel superado!"]]
+    WinCheck -- No --> SafeMove["Casilla vacía, seguir explorando"] --> ShowMaze
+    
+    EndLevel --> ShowMenu
 ```
 # cronograma
 
